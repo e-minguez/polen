@@ -11,10 +11,16 @@ dataDict = {}
 data = soup.findAll("label", {"class": "valor"})
 dataDict['ciudad'] = data[0].getText(strip=True)
 dataDict['fecha'] = data[1].getText(strip=True)
+dataDict['datos'] = []
 
 # Tipo, Medicion, Nivel
-dataDict['mediciones'] = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[5:] ]
+data = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[5:] ]
 
+for i in range(0,len(data),3):
+  tmpdict = {}
+  tmpdict['tipo'] = data[i]
+  tmpdict['medicion'] = data[i+1]
+  tmpdict['nivel'] = data[i+2]
+  dataDict['datos'].append(tmpdict)
 
-print(dataDict)
-
+print(json.dumps(dataDict,indent=4))
