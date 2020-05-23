@@ -8,6 +8,8 @@ Todo esto con el fin de aprender algo de python, flask, etc., nada serio :)
 
 Contribuciones bienvenidas!
 
+Los datos son extraidos de http://gestiona.madrid.org/spol_web_inter/BusquedaCaptadoresGISAccion.icm
+
 ## Ejemplo de json (sujeto a cambios)
 
 ```
