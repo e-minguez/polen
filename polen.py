@@ -23,6 +23,13 @@ emojis = [
   "\U0001F4EC"  # mailbox
 ]
 
+levels = {
+  "bajo": "\U0001F7E2", # green
+  "medio": "\U0001F7E1", # yellow
+  "alto": "\U0001F7E0", # orange
+  "muyalto": "\U0001F534" # red
+}
+
 hashtag = "#LasRozas"
 
 page = requests.get(POLEN_URL)
@@ -42,7 +49,7 @@ for i in range(0,len(data),3):
   tmpdict = {}
   tmpdict['tipo'] = data[i]
   tmpdict['medicion'] = data[i+1]
-  #tmpdict['nivel'] = data[i+2]
+  tmpdict['nivel'] = data[i+2]
   dataDict['datos'].append(tmpdict)
 
 # Open the previous json data
@@ -66,15 +73,23 @@ tweet = random.choice(emojis) + " " + dataDict['ciudad'] + ": " + dataDict['fech
 
 for dic in dataDict['datos']:
     for k in dic:
-      if k != "medicion":
+      if k == "tipo":
         tweet += dic[k] + ": "
-      else:
-        tweet += dic[k] + "\n"
+      elif k == "medicion":
+        tweet += dic[k] + " "
+      elif k == "nivel":
+        if dic[k].startswith("Bajo"):
+          tweet += levels["bajo"] + "\n"
+        elif dic[k].startswith("Medio"):
+          tweet += levels["medio"] + "\n"
+        elif dic[k].startswith("Alto"):
+          tweet += levels["alto"] + "\n"
+        elif dic[k].startswith("Muy alto"):
+          tweet += levels["muyalto"] + "\n"
 
 tweet += hashtag
 
 print(tweet)
-#exit()
 
 # Authenticate to Twitter
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
