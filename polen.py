@@ -13,7 +13,14 @@ POLEN_URL = os.getenv("POLEN_URL")
 
 emojis = [
   "\U0001f927", # sneeze
-  "\U0001F33E"  # wheat
+  "\U0001F33E", # wheat
+  "\U0001F33A", # flower
+  "\U0001f4e2", # loud speaker
+  "\U0001F514", # bell
+  "\U0001F509", # speaker
+  "\U0001F4D6", # open book
+  "\U0001F5DE", # newspaper
+  "\U0001F4EC"  # mailbox
 ]
 
 page = requests.get(POLEN_URL)
