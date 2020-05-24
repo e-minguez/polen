@@ -23,6 +23,8 @@ emojis = [
   "\U0001F4EC"  # mailbox
 ]
 
+hashtag = "#LasRozas"
+
 page = requests.get(POLEN_URL)
 soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -68,6 +70,8 @@ for dic in dataDict['datos']:
         tweet += dic[k] + ": "
       else:
         tweet += dic[k] + "\n"
+
+tweet += hashtag
 
 print(tweet)
 #exit()
