@@ -1,4 +1,4 @@
-import requests, json, tweepy, os
+import requests, json, tweepy, os, random
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
@@ -11,7 +11,10 @@ ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 
 POLEN_URL = os.getenv("POLEN_URL")
 
-sneeze = "\U0001f927"
+emojis = [
+  "\U0001f927", # sneeze
+  "\U0001F33E"  # wheat
+]
 
 page = requests.get(POLEN_URL)
 soup = BeautifulSoup(page.content, 'html.parser')
@@ -33,8 +36,24 @@ for i in range(0,len(data),3):
   #tmpdict['nivel'] = data[i+2]
   dataDict['datos'].append(tmpdict)
 
+# Open the previous json data
+try:
+  with open('previous.json') as json_file:
+    previous = json.load(json_file)
+except:
+  previous = {}
+
+# If the results are the same, do nothing
+if previous == dataDict:
+  print("Dupe")
+  exit()
+# Otherwise, save the file for next execution and continue
+else:
+  with open('previous.json','w') as json_file:
+    json_file.write(json.dumps(dataDict))
+
 #print(json.dumps(dataDict,indent=4))
-tweet = sneeze + " " + dataDict['ciudad'] + ": " + dataDict['fecha'] + "\n"
+tweet = random.choice(emojis) + " " + dataDict['ciudad'] + ": " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
     for k in dic:
