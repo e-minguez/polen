@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-CONSUMER_KEY = os.getenv("CONSUMER_KEY")
-CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
+CONSUMER_KEY = os.getenv("CONSUMER_KEY_LASROZAS")
+CONSUMER_SECRET = os.getenv("CONSUMER_SECRET_LASROZAS")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN_LASROZAS")
+ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET_LASROZAS")
 
-POLEN_URL = os.getenv("POLEN_URL")
+POLEN_URL = os.getenv("POLEN_URL_LASROZAS")
 
 emojis = [
   "\U0001f927", # sneeze
