@@ -54,7 +54,7 @@ for i in range(0,len(data),3):
 
 # Open the previous json data
 try:
-  with open('previous.json') as json_file:
+  with open(dataDict['ciudad']+'.json') as json_file:
     previous = json.load(json_file)
 except:
   previous = {}
@@ -65,7 +65,7 @@ if previous == dataDict:
   exit()
 # Otherwise, save the file for next execution and continue
 else:
-  with open('previous.json','w') as json_file:
+  with open(dataDict['ciudad']+'.json','w') as json_file:
     json_file.write(json.dumps(dataDict))
 
 #print(json.dumps(dataDict,indent=4))
