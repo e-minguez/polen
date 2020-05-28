@@ -38,7 +38,7 @@ soup = BeautifulSoup(page.content, 'html.parser')
 dataDict = {}
 
 data = soup.findAll("label", {"class": "valor"})
-dataDict['ciudad'] = data[0].getText(strip=True)
+#dataDict['ciudad'] = data[0].getText(strip=True)
 dataDict['fecha'] = data[1].getText(strip=True)
 dataDict['datos'] = []
 
@@ -71,7 +71,7 @@ else:
     json_file.write(json.dumps(dataDict))
 
 #print(json.dumps(dataDict,indent=4))
-tweet = random.choice(emojis) + " " + dataDict['ciudad'] + ": " + dataDict['fecha'] + "\n"
+tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
     for k in dic:

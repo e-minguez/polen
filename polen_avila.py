@@ -36,7 +36,7 @@ doc = xmltodict.parse(page.content)
 
 dataDict = {}
 
-dataDict['ciudad'] = "Ávila"
+#dataDict['ciudad'] = "Ávila"
 dataDict['fecha'] = doc["document"]["list"]["element"]["@fecha"]
 dataDict['datos'] = []
 
@@ -66,7 +66,7 @@ else:
     json_file.write(json.dumps(dataDict))
 
 #print(json.dumps(dataDict,indent=4))
-tweet = random.choice(emojis) + " " + dataDict['ciudad'] + ": " + dataDict['fecha'] + "\n"
+tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
     for k in dic:
