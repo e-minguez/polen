@@ -38,7 +38,7 @@ soup = BeautifulSoup(page.content, 'html.parser')
 dataDict = {}
 
 data = soup.findAll("label", {"class": "valor"})
-#dataDict['ciudad'] = data[0].getText(strip=True)
+dataDict['ciudad'] = data[0].getText(strip=True)
 dataDict['fecha'] = data[1].getText(strip=True)
 dataDict['datos'] = []
 

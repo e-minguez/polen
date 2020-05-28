@@ -36,7 +36,7 @@ doc = xmltodict.parse(page.content)
 
 dataDict = {}
 
-#dataDict['ciudad'] = "Ávila"
+dataDict['ciudad'] = "Ávila"
 dataDict['fecha'] = doc["document"]["list"]["element"]["@fecha"]
 dataDict['datos'] = []
 
