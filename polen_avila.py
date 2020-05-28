@@ -48,6 +48,7 @@ for estacion in doc["document"]["list"]["element"]["estacion"]:
     tmpdict['prevision'] = estacion["tipo_polinico"]["valor_previsto"].lower()
     dataDict['datos'].append(tmpdict)
 
+dataDict['datos'] = sorted(dataDict['datos'], key=lambda k: k['tipo']) 
 # Open the previous json data
 try:
   with open(dataDict['ciudad']+'.json') as json_file:
