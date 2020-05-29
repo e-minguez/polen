@@ -49,6 +49,7 @@ for estacion in doc["document"]["list"]["element"]["estacion"]:
     dataDict['datos'].append(tmpdict)
 
 dataDict['datos'] = sorted(dataDict['datos'], key=lambda k: k['tipo']) 
+
 # Open the previous json data
 try:
   with open(dataDict['ciudad']+'.json') as json_file:
@@ -81,7 +82,6 @@ for dic in dataDict['datos']:
           tweet += levels["muyalto"] + "\n"
 
 tweet += hashtag
-
 print(tweet)
 
 # Authenticate to Twitter
@@ -91,21 +91,24 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 # Create API object
 api = tweepy.API(auth)
 
-# https://stackoverflow.com/questions/53798094/tweet-strings-via-tweepy
-TWEET_LIMIT = 200
-print(len(tweet))
-if len(tweet) > TWEET_LIMIT:
-  to_tweet = []
-  while len(tweet) > TWEET_LIMIT:
-    cut = tweet[:TWEET_LIMIT]
-    to_tweet.append(cut)
-    tweet = tweet[TWEET_LIMIT:]
-  to_tweet.append(tweet)
-  for index, tw in enumerate(to_tweet):
-    if index == 0:
-      posted = api.update_status(tw)
+TWEET_LIMIT = 280
+if len(tweet.encode('utf-8')) > TWEET_LIMIT:
+  lines = tweet.splitlines()
+  to_tweet = ""
+  posted = ""
+  for i in range(len(lines)):
+    if len(to_tweet.encode('utf-8')) > TWEET_LIMIT:
+      # Remove the last 5 characters to fit (...)
+      to_tweet = to_tweet[:-5]
+      # Find the latest '\n', remove the leftovers and add (...)
+      to_tweet = to_tweet[:to_tweet.rfind('\n')] + "(...)" 
+      if posted:
+        posted = api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
+      else:
+        posted = api.update_status(to_tweet)
+      to_tweet = ""
     else:
-      posted = api.update_status(tw,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
+      to_tweet += (lines[i] + '\n')
+  api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
 else:
-  # Create a tweet
   api.update_status(tweet)
