@@ -1,4 +1,4 @@
-import requests, json, tweepy, os, random, xmltodict, time
+import requests, json, tweepy, os, random, xmltodict, datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -42,7 +42,8 @@ doc = xmltodict.parse(page.content)
 dataDict = {}
 
 dataDict['ciudad'] = "Ávila"
-dataDict['fecha'] = doc["document"]["list"]["element"]["@fecha"]
+dataDict['fecha-inicio'] = doc["document"]["list"]["element"]["@fecha"]
+dataDict['fecha-fin'] = (datetime.datetime.strptime(dataDict['fecha-inicio'], '%d/%m/%Y') + datetime.timedelta(days=7)).strftime('%d/%m/%Y')
 dataDict['datos'] = []
 
 for estacion in doc["document"]["list"]["element"]["estacion"]:
@@ -72,7 +73,7 @@ else:
     json_file.write(json.dumps(dataDict))
 
 #print(json.dumps(dataDict,indent=4))
-tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
+tweet = random.choice(emojis) + " " + dataDict['fecha-inicio'] + "-" + dataDict['fecha-fin'] + "\n"
 
 for dic in dataDict['datos']:
     for k in dic:
@@ -80,11 +81,18 @@ for dic in dataDict['datos']:
         tweet += dic[k] + ": "
       elif k == "real":
         if dic[k].startswith("bajo"):
-          tweet += levels["bajo"] + "\n"
+          tweet += levels["bajo"]
         elif dic[k].startswith("moderado"):
-          tweet += levels["medio"] + "\n"
+          tweet += levels["medio"]
         elif dic[k].startswith("alto"):
-          tweet += levels["muyalto"] + "\n"
+          tweet += levels["muyalto"]
+      elif k == "prevision":
+        if dic[k].startswith("bajo"):
+          tweet += "[" + levels["bajo"] + "]\n"
+        elif dic[k].startswith("moderado"):
+          tweet += "[" + levels["medio"] + "]\n"
+        elif dic[k].startswith("alto"):
+          tweet += "[" + levels["muyalto"] + "]\n"
 
 tweet += hashtag
 print(tweet)
