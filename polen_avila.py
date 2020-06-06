@@ -119,7 +119,7 @@ if len(tweet.encode('utf-8')) > TWEET_LIMIT:
         posted = api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
       else:
         posted = api.update_status(to_tweet)
-      to_tweet = ""
+      to_tweet = (lines[i-1] + '\n' + lines[i] + '\n')
     else:
       to_tweet += (lines[i] + '\n')
   api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
