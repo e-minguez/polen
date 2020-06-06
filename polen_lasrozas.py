@@ -32,7 +32,12 @@ levels = {
 
 hashtag = "#LasRozas"
 
-page = requests.get(POLEN_URL)
+try:
+  page = requests.get(POLEN_URL)
+  page.raise_for_status()
+except requests.exceptions.HTTPError as err:
+  raise SystemExit(err)
+
 soup = BeautifulSoup(page.content, 'html.parser')
 
 dataDict = {}
