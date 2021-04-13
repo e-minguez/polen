@@ -1,4 +1,4 @@
-import requests, json, tweepy, os, random, datetime, locale
+import requests, json, tweepy, os, random
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
@@ -40,32 +40,21 @@ except requests.exceptions.HTTPError as err:
 
 soup = BeautifulSoup(page.content, 'html.parser')
 
-tables = soup.findAll("table")
-
 dataDict = {}
-dataDict['ciudad'] = "Las Rozas"
+
+data = soup.findAll("label", {"class": "valor"})
+dataDict['ciudad'] = data[0].getText(strip=True)
+dataDict['fecha'] = data[1].getText(strip=True)
 dataDict['datos'] = []
 
-for table in tables:
+# Tipo, Medicion, Nivel
+data = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[5:] ]
+
+for i in range(0,len(data),3):
   tmpdict = {}
-  for table_row in table.findAll('tr'):
-    k=table_row.find("label", {"class": "nombre"}).getText(strip=True)
-    v=table_row.find("label", {"class": "valor"}).getText(strip=True)
-    if ((k == "FC_FECHA_MEDICION") and ('fecha' not in dataDict)):
-      fecha_orig = datetime.datetime.strptime(v,"%d/%m/%y %H:%M")
-      locale.setlocale(locale.LC_ALL,'es_ES.UTF-8')
-      dataDict['fecha'] = datetime.datetime.strftime(fecha_orig,'%d-%b-%Y')
-    if k == "DS_MATERIAS":
-      tmpdict['tipo']=v
-    if k == "NM_VALOR":
-      tmpdict['medicion']=v
-      tmpdict['nivel']="bajo"
-    if ((k == "NM_MEDIO") and ((int(tmpdict['medicion'])>(int(v))))):
-      tmpdict['nivel']="medio"
-    if ((k == "NM_ALTO") and ((int(tmpdict['medicion'])>(int(v))))):
-      tmpdict['nivel']="alto"
-    if ((k == "NM_MUYALTO") and ((int(tmpdict['medicion'])>(int(v))))):
-      tmpdict['nivel']="muyalto"
+  tmpdict['tipo'] = data[i]
+  tmpdict['medicion'] = data[i+1]
+  tmpdict['nivel'] = data[i+2]
   dataDict['datos'].append(tmpdict)
 
 dataDict['datos'] = sorted(dataDict['datos'], key=lambda k: k['tipo']) 
@@ -90,7 +79,20 @@ else:
 tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
-  tweet += dic["tipo"] + ": " + dic["medicion"] + " " + levels[dic["nivel"]]+ "\n"
+    for k in dic:
+      if k == "tipo":
+        tweet += dic[k] + ": "
+      elif k == "medicion":
+        tweet += dic[k] + " "
+      elif k == "nivel":
+        if dic[k].startswith("Bajo"):
+          tweet += levels["bajo"] + "\n"
+        elif dic[k].startswith("Medio"):
+          tweet += levels["medio"] + "\n"
+        elif dic[k].startswith("Alto"):
+          tweet += levels["alto"] + "\n"
+        elif dic[k].startswith("Muy alto"):
+          tweet += levels["muyalto"] + "\n"
 
 tweet += hashtag
 
