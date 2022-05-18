@@ -130,8 +130,8 @@ if len(tweet.encode('utf-8')) > TWEET_LIMIT:
     if len(to_tweet.encode('utf-8')) > TWEET_LIMIT:
       # Remove the last 5 characters to fit (...)
       to_tweet = to_tweet[:-5]
-      # Find the latest '\n', remove the leftovers and add (...)
-      to_tweet = to_tweet[:to_tweet.rfind('\n')] + "(...)"
+      # Find the latest '\n', remove the leftovers and add [...]
+      to_tweet = to_tweet[:to_tweet.rfind('\n')] + "[...]"
       if posted:
         posted = api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
       else:
