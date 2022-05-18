@@ -121,5 +121,24 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 # Create API object
 api = tweepy.API(auth)
 
-# Create a tweet
-api.update_status(tweet)
+TWEET_LIMIT = 280
+if len(tweet.encode('utf-8')) > TWEET_LIMIT:
+  lines = tweet.splitlines()
+  to_tweet = ""
+  posted = ""
+  for i in range(len(lines)):
+    if len(to_tweet.encode('utf-8')) > TWEET_LIMIT:
+      # Remove the last 5 characters to fit (...)
+      to_tweet = to_tweet[:-5]
+      # Find the latest '\n', remove the leftovers and add (...)
+      to_tweet = to_tweet[:to_tweet.rfind('\n')] + "(...)"
+      if posted:
+        posted = api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
+      else:
+        posted = api.update_status(to_tweet)
+      to_tweet = (lines[i-1] + '\n' + lines[i] + '\n')
+    else:
+      to_tweet += (lines[i] + '\n')
+  api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
+else:
+  api.update_status(tweet)
