@@ -30,6 +30,12 @@ levels = {
   "muyalto": "\U0001F534" # red
 }
 
+arrows = {
+  "up": "\U00002b06",
+  "down": "\U00002b07",
+  "equal": "\U00002194"
+}
+
 hashtag = "#LasRozas"
 
 try:
@@ -79,6 +85,8 @@ else:
 tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
+    tipo=dic['tipo']
+    old=next(item for item in previous['datos'] if item["tipo"] == tipo)
     for k in dic:
       if k == "tipo":
         tweet += dic[k] + ": "
@@ -86,13 +94,21 @@ for dic in dataDict['datos']:
         tweet += dic[k] + " "
       elif k == "nivel":
         if dic[k].startswith("Bajo"):
-          tweet += levels["bajo"] + "\n"
+          tweet += levels["bajo"]
         elif dic[k].startswith("Medio"):
-          tweet += levels["medio"] + "\n"
+          tweet += levels["medio"]
         elif dic[k].startswith("Alto"):
-          tweet += levels["alto"] + "\n"
+          tweet += levels["alto"]
         elif dic[k].startswith("Muy alto"):
-          tweet += levels["muyalto"] + "\n"
+          tweet += levels["muyalto"]
+    tweet += " | "
+    if dic['medicion'] == old['medicion']:
+        tweet += arrows["equal"]
+    elif dic['medicion'] > old['medicion']:
+        tweet += arrows["up"]
+    elif dic['medicion'] < old['medicion']:
+        tweet += arrows["down"]
+    tweet += " (" + old['medicion'] + ")\n"
 
 tweet += hashtag
 
