@@ -102,11 +102,11 @@ for dic in dataDict['datos']:
         elif dic[k].startswith("Muy alto"):
           tweet += levels["muyalto"]
     tweet += " | "
-    if dic['medicion'] == old['medicion']:
+    if int(dic['medicion']) == int(old['medicion']):
         tweet += arrows["equal"]
-    elif dic['medicion'] > old['medicion']:
+    elif int(dic['medicion']) > int(old['medicion']):
         tweet += arrows["up"]
-    elif dic['medicion'] < old['medicion']:
+    elif int(dic['medicion']) < int(old['medicion']):
         tweet += arrows["down"]
     tweet += " (" + old['medicion'] + ")\n"
 
