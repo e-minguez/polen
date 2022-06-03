@@ -1,6 +1,7 @@
-import requests, json, tweepy, os, random
+import requests, json, tweepy, os, random, locale
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -81,10 +82,18 @@ else:
   with open(dataDict['ciudad']+'.json','w') as json_file:
     json_file.write(json.dumps(dataDict))
 
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+fecha = datetime.strptime(dataDict['fecha'], '%d-%b-%Y')
+
+if fecha > datetime.today():
+  print("Future")
+  exit()
+
 #print(json.dumps(dataDict,indent=4))
 tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
+  if int(dic['medicion']) != 0:
     tipo=dic['tipo']
     old=next(item for item in previous['datos'] if item["tipo"] == tipo)
     for k in dic:
@@ -110,6 +119,8 @@ for dic in dataDict['datos']:
         tweet += arrows["down"]
     tweet += " (" + old['medicion'] + ")\n"
 
+if tweet.count('\n') < 2:
+  tweet += "Sin datos\n"
 tweet += hashtag
 
 print(tweet)
