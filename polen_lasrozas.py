@@ -55,13 +55,12 @@ dataDict['fecha'] = data[1].getText(strip=True)
 dataDict['datos'] = []
 
 # Tipo, Medicion, Nivel
-data = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[5:] ]
+data = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[4:] ]
 
-for i in range(0,len(data),3):
+for i in range(0,len(data),2):
   tmpdict = {}
   tmpdict['tipo'] = data[i]
-  tmpdict['medicion'] = data[i+1]
-  tmpdict['nivel'] = data[i+2]
+  tmpdict['nivel'] = data[i+1]
   dataDict['datos'].append(tmpdict)
 
 dataDict['datos'] = sorted(dataDict['datos'], key=lambda k: k['tipo']) 
@@ -82,42 +81,31 @@ else:
   with open(dataDict['ciudad']+'.json','w') as json_file:
     json_file.write(json.dumps(dataDict))
 
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-fecha = datetime.strptime(dataDict['fecha'], '%d-%b-%Y')
+#locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+#fecha = datetime.strptime(dataDict['fecha'], '%d-%b-%Y')
 
-if fecha > datetime.today():
-  print("Future")
-  exit()
+#if fecha > datetime.today():
+#  print("Future")
+#  exit()
 
 #print(json.dumps(dataDict,indent=4))
 tweet = random.choice(emojis) + " " + dataDict['fecha'] + "\n"
 
 for dic in dataDict['datos']:
-  if int(dic['medicion']) != 0:
-    tipo=dic['tipo']
-    old=next(item for item in previous['datos'] if item["tipo"] == tipo)
-    for k in dic:
-      if k == "tipo":
-        tweet += dic[k] + ": "
-      elif k == "medicion":
-        tweet += dic[k] + " "
-      elif k == "nivel":
-        if dic[k].startswith("Bajo"):
-          tweet += levels["bajo"]
-        elif dic[k].startswith("Medio"):
-          tweet += levels["medio"]
-        elif dic[k].startswith("Alto"):
-          tweet += levels["alto"]
-        elif dic[k].startswith("Muy alto"):
-          tweet += levels["muyalto"]
-    tweet += " | "
-    if int(dic['medicion']) == int(old['medicion']):
-        tweet += arrows["equal"]
-    elif int(dic['medicion']) > int(old['medicion']):
-        tweet += arrows["up"]
-    elif int(dic['medicion']) < int(old['medicion']):
-        tweet += arrows["down"]
-    tweet += " (" + old['medicion'] + ")\n"
+  tipo=dic['tipo']
+  for k in dic:
+    if k == "tipo":
+      tweet += dic[k] + ": "
+    elif k == "nivel":
+      if dic[k].startswith("Bajo"):
+        tweet += levels["bajo"]
+      elif dic[k].startswith("Medio"):
+        tweet += levels["medio"]
+      elif dic[k].startswith("Alto"):
+        tweet += levels["alto"]
+      elif dic[k].startswith("Muy alto"):
+        tweet += levels["muyalto"]
+  tweet += "\n"
 
 if tweet.count('\n') < 2:
   tweet += "Sin datos\n"
