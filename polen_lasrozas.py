@@ -131,15 +131,15 @@ if len(tweet.encode('utf-8')) > TWEET_LIMIT:
     if len(to_tweet.encode('utf-8')) > TWEET_LIMIT:
       # Remove the last 5 characters to fit (...)
       to_tweet = to_tweet[:-5]
-      # Find the latest '\n', remove the leftovers and add [...]
-      to_tweet = to_tweet[:to_tweet.rfind('\n')] + "[...]"
+      # Find the latest '\n', remove the leftovers and add (...)
+      to_tweet = to_tweet[:to_tweet.rfind('\n')] + "(...)" 
       if posted:
-        posted = api.create_tweet(text=to_tweet,in_reply_to_tweet_id=posted.id)
+        posted = api.create_tweet(text=to_tweet,in_reply_to_tweet_id=posted.data.get('id'))
       else:
-        posted = api.create_tweet(to_tweet)
+        posted = api.create_tweet(text=to_tweet)
       to_tweet = (lines[i-1] + '\n' + lines[i] + '\n')
     else:
       to_tweet += (lines[i] + '\n')
-  api.create_tweet(text=to_tweet,in_reply_to_tweet_id=posted.id)
+  api.create_tweet(text=to_tweet,in_reply_to_tweet_id=posted.data.get('id'))
 else:
   api.create_tweet(text=tweet)
