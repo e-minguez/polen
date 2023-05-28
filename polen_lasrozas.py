@@ -9,6 +9,7 @@ CONSUMER_KEY = os.getenv("CONSUMER_KEY_LASROZAS")
 CONSUMER_SECRET = os.getenv("CONSUMER_SECRET_LASROZAS")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN_LASROZAS")
 ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET_LASROZAS")
+BEARER_TOKEN = os.getenv("BEARER_TOKEN_LASROZAS")
 
 POLEN_URL = os.getenv("POLEN_URL_LASROZAS")
 
@@ -114,11 +115,12 @@ tweet += hashtag
 print(tweet)
 
 # Authenticate to Twitter
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+api = tweepy.Client(bearer_token=BEARER_TOKEN)
 
-# Create API object
-api = tweepy.API(auth)
+api = tweepy.Client(
+    consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET,
+    access_token=ACCESS_TOKEN, access_token_secret=ACCESS_TOKEN_SECRET
+)
 
 TWEET_LIMIT = 280
 if len(tweet.encode('utf-8')) > TWEET_LIMIT:
@@ -132,12 +134,12 @@ if len(tweet.encode('utf-8')) > TWEET_LIMIT:
       # Find the latest '\n', remove the leftovers and add [...]
       to_tweet = to_tweet[:to_tweet.rfind('\n')] + "[...]"
       if posted:
-        posted = api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
+        posted = api.create_tweet(text=to_tweet,in_reply_to_tweet_id=posted.id)
       else:
-        posted = api.update_status(to_tweet)
+        posted = api.create_tweet(to_tweet)
       to_tweet = (lines[i-1] + '\n' + lines[i] + '\n')
     else:
       to_tweet += (lines[i] + '\n')
-  api.update_status(to_tweet,in_reply_to_status_id=posted.id,auto_populate_reply_metadata=True)
+  api.create_tweet(text=to_tweet,in_reply_to_tweet_id=posted.id)
 else:
-  api.update_status(tweet)
+  api.create_tweet(text=tweet)
