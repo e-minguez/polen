@@ -56,12 +56,13 @@ dataDict['fecha'] = data[1].getText(strip=True)
 dataDict['datos'] = []
 
 # Tipo, Medicion, Nivel
-data = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[4:] ]
+data = [ tmpdata.getText(strip=True) for tmpdata in soup.findAll("label", {"class": "texto"})[5:] ]
 
-for i in range(0,len(data),2):
+for i in range(0,len(data),3):
   tmpdict = {}
   tmpdict['tipo'] = data[i]
-  tmpdict['nivel'] = data[i+1]
+  tmpdict['medicion'] = data[i+1]
+  tmpdict['nivel'] = data[i+2]
   dataDict['datos'].append(tmpdict)
 
 dataDict['datos'] = sorted(dataDict['datos'], key=lambda k: k['tipo']) 
@@ -97,6 +98,8 @@ for dic in dataDict['datos']:
   for k in dic:
     if k == "tipo":
       tweet += dic[k] + ": "
+    elif k == "medicion":
+      tweet += dic[k] + " "
     elif k == "nivel":
       if dic[k].startswith("Bajo"):
         tweet += levels["bajo"]
