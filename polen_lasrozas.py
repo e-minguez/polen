@@ -1,45 +1,51 @@
-import requests, random, os, sys
-from bs4 import BeautifulSoup
+import requests, random, os, sys, json, datetime
 from dotenv import load_dotenv
-from polen_lib import EMOJIS, LEVELS, create_client, is_dupe, save_data, post_thread
+from polen_lib import EMOJIS, LEVELS, classify_level, create_client, is_dupe, save_data, post_thread
 
 load_dotenv()
 
-POLEN_URL = os.getenv("POLEN_URL_LASROZAS")
+RESOURCE_ID = "1f2c4851-b69b-4daa-85ae-89f56cabc67d"
+CAPTADOR    = os.getenv("CAPTADOR_LASROZAS", "ROZA")
+API         = "https://datos.comunidad.madrid/api/3/action/datastore_search"
 
-try:
-    page = requests.get(POLEN_URL, timeout=10)
-    page.raise_for_status()
-except requests.exceptions.HTTPError as err:
-    raise SystemExit(err)
 
-soup = BeautifulSoup(page.content, "html.parser")
+def ckan_search(**params):
+    r = requests.get(API, params=params, timeout=10)
+    r.raise_for_status()
+    result = r.json()
+    if not result.get("success"):
+        raise SystemExit(f"CKAN error: {result.get('error')}")
+    return result["result"]["records"]
 
-data = soup.find_all("label", {"class": "valor"})
-dataDict = {
-    "ciudad": data[0].get_text(strip=True),
-    "fecha":  data[1].get_text(strip=True),
-    "datos":  [],
-}
 
-raw = [t.get_text(strip=True) for t in soup.find_all("label", {"class": "texto"})[5:]]
-for i in range(0, len(raw), 3):
-    dataDict["datos"].append({"tipo": raw[i], "medicion": raw[i+1], "nivel": raw[i+2]})
-dataDict["datos"].sort(key=lambda k: k["tipo"])
+# Fetch recent rows for this captador, filter latest date client-side
+all_rows = ckan_search(resource_id=RESOURCE_ID, filters=json.dumps({"captador": CAPTADOR}), sort="fecha_lectura desc", limit=50)
+latest_date = all_rows[0]["fecha_lectura"]
 
-if is_dupe(dataDict["ciudad"], dataDict):
+if is_dupe("Las Rozas", {"fecha": latest_date}):
     print("Dupe")
     sys.exit(0)
 
-tweet = random.choice(EMOJIS) + " " + dataDict["fecha"] + "\n"
+records = sorted([r for r in all_rows if r["fecha_lectura"] == latest_date], key=lambda r: r["tipo_polinico"])
+
+dataDict = {
+    "ciudad":   "Las Rozas",
+    "captador": CAPTADOR,
+    "fecha":    latest_date,
+    "datos":    [{"tipo": r["tipo_polinico"], "granos": r["granos_de_polen_x_metro_cubico"]} for r in records],
+}
+
+_MONTHS_ES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]
+def _fmt_date(iso):
+    dt = datetime.datetime.fromisoformat(iso)
+    return f"{dt.day:02d}-{_MONTHS_ES[dt.month-1]}-{dt.year}"
+
+tweet = random.choice(EMOJIS) + " " + _fmt_date(latest_date) + "\n"
 for d in dataDict["datos"]:
-    nivel = d["nivel"]
-    if nivel.startswith("Bajo"):       icon = LEVELS["bajo"]
-    elif nivel.startswith("Medio"):    icon = LEVELS["medio"]
-    elif nivel.startswith("Alto"):     icon = LEVELS["alto"]
-    elif nivel.startswith("Muy alto"): icon = LEVELS["muyalto"]
-    else:                              icon = ""
-    tweet += f"{d['tipo']}: {d['medicion']} {icon}\n"
+    granos = int(d["granos"] or 0)
+    if granos == 0:
+        continue
+    tweet += f"{d['tipo']}: {granos} {LEVELS[classify_level(granos)]}\n"
 
 if tweet.count("\n") < 2:
     tweet += "Sin datos\n"
@@ -47,4 +53,4 @@ tweet += "#LasRozas"
 
 print(tweet)
 post_thread(create_client("LASROZAS"), tweet)
-save_data(dataDict["ciudad"], dataDict)
+save_data("Las Rozas", {"fecha": latest_date})

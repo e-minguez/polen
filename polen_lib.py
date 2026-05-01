@@ -43,6 +43,14 @@ def save_data(city, data):
         json.dump(data, f)
 
 
+def classify_level(granos):
+    g = int(granos or 0)
+    if g < 10:  return "bajo"
+    if g < 50:  return "medio"
+    if g < 200: return "alto"
+    return "muyalto"
+
+
 def _twitter_len(text):
     # BMP chars = 1, supplementary (emoji) = 2
     return sum(2 if ord(c) > 0xFFFF else 1 for c in text)

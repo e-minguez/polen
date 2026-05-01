@@ -1,5 +1,5 @@
-beautifulsoup4
-python-dotenv
-requests
-tweepy
-xmltodict
+beautifulsoup4==4.14.3
+python-dotenv==1.2.2
+requests==2.33.1
+tweepy==4.16.0
+xmltodict==1.0.4
