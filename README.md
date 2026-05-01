@@ -1,77 +1,81 @@
-# Polen
+# Polen 🌿
 
-WIP!
+Automated Twitter/X bots that monitor pollen levels in Spain and tweet whenever new data is published.
 
-La idea es hacer scrapping de los datos de las mediciones de polen que ofrece la comunidad de Madrid, ofrecerlos en json sobre algun tipo de API rest (/polen/las_rozas/ p.ej) y twittear cuando haya algun cambio.
+| Bot | Location | Source |
+|-----|----------|--------|
+| [@PolenLasRozas](https://twitter.com/PolenLasRozas) | Las Rozas, Madrid | [datos.comunidad.madrid](https://datos.comunidad.madrid/catalogo/dataset/e608aace-3593-43a3-8c91-02332137fa83) CKAN API |
+| [@PolenAvila](https://twitter.com/PolenAvila) | Ávila | [opendata.jcyl.es](https://opendata.jcyl.es/ficheros/inpo/polen_actual.xml) XML feed |
 
-Todo esto con el fin de aprender algo de python, flask, etc., nada serio :)
+## How it works
 
-Contribuciones bienvenidas!
+Each script:
+1. Fetches the latest pollen readings from its data source
+2. Compares with the last posted date — exits silently if nothing changed
+3. Builds a tweet with each pollen type, its grain count, and a color-coded level icon
+4. Posts as a thread if the content exceeds 280 characters
 
-Los datos son extraidos de http://gestiona.madrid.org/spol_web_inter/BusquedaCaptadoresGISAccion.icm
+Pollen levels follow REA thresholds:
 
-## Ejemplo de json (sujeto a cambios)
+| Level | Grains/m³ | Icon |
+|-------|-----------|------|
+| Low | < 10 | 🟢 |
+| Medium | 10–49 | 🟡 |
+| High | 50–199 | 🟠 |
+| Very high | ≥ 200 | 🔴 |
+
+Zero readings are omitted from the tweet.
+
+## Setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp env.example .env
+# fill in your Twitter API credentials in .env
+```
+
+## Configuration
+
+Copy `env.example` to `.env` and fill in the values:
+
+```env
+# Las Rozas
+CONSUMER_KEY_LASROZAS=...
+CONSUMER_SECRET_LASROZAS=...
+ACCESS_TOKEN_LASROZAS=...
+ACCESS_TOKEN_SECRET_LASROZAS=...
+CAPTADOR_LASROZAS=ROZA
+
+# Ávila
+CONSUMER_KEY_AVILA=...
+CONSUMER_SECRET_AVILA=...
+ACCESS_TOKEN_AVILA=...
+ACCESS_TOKEN_SECRET_AVILA=...
+POLEN_URL_AVILA=https://opendata.jcyl.es/ficheros/inpo/polen_actual.xml
+```
+
+Twitter API credentials require a [developer account](https://developer.twitter.com) with an app inside a **Project** (Pay Per Use tier).
+
+## Running
+
+```bash
+python3 polen_lasrozas.py
+python3 polen_avila.py
+```
+
+Intended to run daily via cron:
+
+```cron
+0 10 * * * cd /path/to/polen && .venv/bin/python3 polen_lasrozas.py
+0 10 * * * cd /path/to/polen && .venv/bin/python3 polen_avila.py
+```
+
+## Project structure
 
 ```
-{
-    "ciudad": "Las Rozas",
-    "fecha": "21-may-2020",
-    "datos": [
-        {
-            "tipo": "Aliso",
-            "medicion": "0",
-            "nivel": "Bajo (< 15)"
-        },
-        {
-            "tipo": "Artemisia",
-            "medicion": "0",
-            "nivel": "Bajo (< 5)"
-        },
-        {
-            "tipo": "Cupres\u00e1ceas/Tax\u00e1ceas",
-            "medicion": "13",
-            "nivel": "Bajo (< 111)"
-        },
-        {
-            "tipo": "Quenopodi\u00e1ceas/Amarant\u00e1ceas",
-            "medicion": "1",
-            "nivel": "Bajo (< 5)"
-        },
-        {
-            "tipo": "Fresno",
-            "medicion": "0",
-            "nivel": "Bajo (< 25)"
-        },
-        {
-            "tipo": "Aligustre",
-            "medicion": "0",
-            "nivel": "Bajo (< 10)"
-        },
-        {
-            "tipo": "Olivo",
-            "medicion": "57",
-            "nivel": "Medio (35..69)"
-        },
-        {
-            "tipo": "Plantago",
-            "medicion": "125",
-            "nivel": "Muy alto (>= 60)"
-        },
-        {
-            "tipo": "Pl\u00e1tano de paseo",
-            "medicion": "1",
-            "nivel": "Bajo (< 62)"
-        },
-        {
-            "tipo": "Gram\u00edneas",
-            "medicion": "525",
-            "nivel": "Muy alto (>= 161)"
-        },
-        {
-            "tipo": "Urticaceae (Ortigas)",
-            "medicion": "8",
-            "nivel": "Bajo (< 10)"
-        }
-    ]
-}
+polen_lib.py        # shared: Twitter client, dupe detection, tweet threading, level classification
+polen_lasrozas.py   # Las Rozas bot
+polen_avila.py      # Ávila bot
 ```
