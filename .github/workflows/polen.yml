@@ -1,0 +1,28 @@
+name: Polen Las Rozas
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+jobs:
+  pollen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run polen_lasrozas
+        run: python polen_lasrozas.py
+        env:
+          CONSUMER_KEY_LASROZAS: ${{ secrets.CONSUMER_KEY_LASROZAS }}
+          CONSUMER_SECRET_LASROZAS: ${{ secrets.CONSUMER_SECRET_LASROZAS }}
+          ACCESS_TOKEN_LASROZAS: ${{ secrets.ACCESS_TOKEN_LASROZAS }}
+          ACCESS_TOKEN_SECRET_LASROZAS: ${{ secrets.ACCESS_TOKEN_SECRET_LASROZAS }}
