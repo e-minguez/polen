@@ -24,6 +24,9 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
       - name: Run polen_lasrozas
         run: python polen_lasrozas.py
         env:
