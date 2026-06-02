@@ -34,8 +34,8 @@ if is_dupe(dataDict["ciudad"], dataDict):
 
 def level_icon(val):
     if val.startswith("bajo"):     return LEVELS["bajo"]
-    if val.startswith("moderado"): return LEVELS["medio"]
-    if val.startswith("alto"):     return LEVELS["muyalto"]
+    if val.startswith("moderado"): return LEVELS["moderado"]
+    if val.startswith("alto"):     return LEVELS["alto"]
     return ""
 
 tweet = random.choice(EMOJIS) + " " + fecha_inicio + "-" + fecha_fin + "\n"

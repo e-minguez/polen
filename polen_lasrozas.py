@@ -45,7 +45,7 @@ for d in dataDict["datos"]:
     granos = int(d["granos"] or 0)
     if granos == 0:
         continue
-    tweet += f"{d['tipo']}: {granos} {LEVELS[classify_level(granos)]}\n"
+    tweet += f"{d['tipo']}: {granos} {LEVELS[classify_level(granos, d['tipo'])]}\n"
 
 if tweet.count("\n") < 2:
     tweet += "Sin datos\n"

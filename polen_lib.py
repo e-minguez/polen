@@ -13,10 +13,9 @@ EMOJIS = [
 ]
 
 LEVELS = {
-    "bajo":    "\U0001F7E2",  # green
-    "medio":   "\U0001F7E1",  # yellow
-    "alto":    "\U0001F7E0",  # orange
-    "muyalto": "\U0001F534",  # red
+    "bajo":     "\U0001F7E2",  # 🟢
+    "moderado": "\U0001F7E1",  # 🟡
+    "alto":     "\U0001F534",  # 🔴
 }
 
 
@@ -43,12 +42,27 @@ def save_data(city, data):
         json.dump(data, f)
 
 
-def classify_level(granos):
+_THRESHOLDS = {
+    "Gramíneas":                   (20, 50),
+    "Olivo":                       (20, 50),
+    "Plantago":                    (20, 50),
+    "Cupresáceas/Taxáceas":        (50, 200),
+    "Plátano de paseo":            (50, 250),
+    "Urticaceae (Ortigas)":        (15, 30),
+    "Quenopodiáceas/Amarantáceas": (15, 30),
+    "Artemisia":                   (15, 30),
+    "Compuestas":                  (15, 30),
+    "Rumex (Acederas)":            (15, 30),
+}
+_DEFAULT_THRESHOLDS = (30, 100)
+
+
+def classify_level(granos, tipo=None):
     g = int(granos or 0)
-    if g < 10:  return "bajo"
-    if g < 50:  return "medio"
-    if g < 200: return "alto"
-    return "muyalto"
+    low, mid = _THRESHOLDS.get(tipo, _DEFAULT_THRESHOLDS)
+    if g < low: return "bajo"
+    if g < mid: return "moderado"
+    return "alto"
 
 
 def _twitter_len(text):
