@@ -43,22 +43,37 @@ def save_data(city, data):
 
 
 _THRESHOLDS = {
-    # Source: REA/UCO https://www.uco.es/investiga/grupos/rea/?page_id=262
-    "Gramíneas":                   (10, 50),   # Poaceae
-    "Olivo":                       (50, 200),  # Olea
-    "Plantago":                    (10, 50),
-    "Cupresáceas/Taxáceas":        (50, 200),  # Cupressus
-    "Plátano de paseo":            (50, 200),  # Platanus
-    "Urticaceae (Ortigas)":        (10, 20),   # Urticaceae
-    "Quenopodiáceas/Amarantáceas": (10, 20),   # Amaranthaceae
-    "Aliso":                       (30, 50),   # Alnus
-    "Abedul":                      (30, 50),   # Betula
-    "Corylus":                     (30, 50),
-    "Fresno":                      (30, 50),   # Fraxinus
-    "Pinos":                       (50, 200),  # Pinus
-    "Quercus":                     (50, 200),
+    # UCO REA 4-group system: uco.es/investiga/grupos/rea/?page_id=195
+    # (low, mid) = (start_of_moderado, start_of_alto)
+    # Group 1 — bajo:1-15, moderado:16-30, alto:>30
+    "Urticaceae (Ortigas)":        (16, 31),
+    # Group 2 — bajo:1-25, moderado:26-50, alto:>50
+    "Gramíneas":                   (26, 51),
+    "Quenopodiáceas/Amarantáceas": (26, 51),
+    "Plantago":                    (26, 51),
+    "Rumex (Acederas)":            (26, 51),
+    "Artemisia":                   (26, 51),
+    "Ericaceae":                   (26, 51),
+    "Compuestas":                  (26, 51),
+    # Group 3 — bajo:1-30, moderado:31-50, alto:>50
+    "Aliso":                       (31, 51),
+    "Abedul":                      (31, 51),
+    "Corylus":                     (31, 51),
+    "Castaño":                     (31, 51),
+    "Eucalipto":                   (31, 51),
+    "Arce":                        (31, 51),
+    "Populus":                     (31, 51),
+    "Olmos":                       (31, 51),
+    "Aligustre":                   (31, 51),
+    "Fresno":                      (31, 51),
+    # Group 4 — bajo:1-50, moderado:51-200, alto:>200
+    "Olivo":                       (51, 201),
+    "Cupresáceas/Taxáceas":        (51, 201),
+    "Plátano de paseo":            (51, 201),
+    "Quercus":                     (51, 201),
+    "Pinos":                       (51, 201),
 }
-_DEFAULT_THRESHOLDS = (30, 100)
+_DEFAULT_THRESHOLDS = (31, 51)  # Group 3 for unclassified species
 
 
 def classify_level(granos, tipo=None):
