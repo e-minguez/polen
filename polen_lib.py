@@ -43,16 +43,20 @@ def save_data(city, data):
 
 
 _THRESHOLDS = {
-    "Gramíneas":                   (20, 50),
-    "Olivo":                       (20, 50),
-    "Plantago":                    (20, 50),
-    "Cupresáceas/Taxáceas":        (50, 200),
-    "Plátano de paseo":            (50, 250),
-    "Urticaceae (Ortigas)":        (15, 30),
-    "Quenopodiáceas/Amarantáceas": (15, 30),
-    "Artemisia":                   (15, 30),
-    "Compuestas":                  (15, 30),
-    "Rumex (Acederas)":            (15, 30),
+    # Source: REA/UCO https://www.uco.es/investiga/grupos/rea/?page_id=262
+    "Gramíneas":                   (10, 50),   # Poaceae
+    "Olivo":                       (50, 200),  # Olea
+    "Plantago":                    (10, 50),
+    "Cupresáceas/Taxáceas":        (50, 200),  # Cupressus
+    "Plátano de paseo":            (50, 200),  # Platanus
+    "Urticaceae (Ortigas)":        (10, 20),   # Urticaceae
+    "Quenopodiáceas/Amarantáceas": (10, 20),   # Amaranthaceae
+    "Aliso":                       (30, 50),   # Alnus
+    "Abedul":                      (30, 50),   # Betula
+    "Corylus":                     (30, 50),
+    "Fresno":                      (30, 50),   # Fraxinus
+    "Pinos":                       (50, 200),  # Pinus
+    "Quercus":                     (50, 200),
 }
 _DEFAULT_THRESHOLDS = (30, 100)
 
