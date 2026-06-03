@@ -21,7 +21,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "*.json"
-          key: polen-cache-${{ runner.os }}
+          key: polen-cache-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            polen-cache-${{ runner.os }}-
 
       - name: Set up Python
         uses: actions/setup-python@v5
