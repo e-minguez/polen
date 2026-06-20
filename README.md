@@ -1,5 +1,7 @@
 # Polen 🌿
 
+![Polen España Banner](assets/readme_banner.png)
+
 Automated Twitter/X bots that monitor pollen levels in Spain and tweet whenever new data is published.
 
 | Bot | Location | Source |
