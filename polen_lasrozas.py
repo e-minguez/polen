@@ -18,8 +18,14 @@ def ckan_search(**params):
     return result["result"]["records"]
 
 
-# Fetch recent rows for this captador, filter latest date client-side
+# Fetch recent rows for this captador, filter latest date client-side.
+# The provider reloads its datastore non-atomically each day, so a run that lands
+# mid-reload can see this captador with no rows yet. Skip gracefully instead of
+# crashing and let the next scheduled run pick it up.
 all_rows = ckan_search(resource_id=RESOURCE_ID, filters=json.dumps({"captador": CAPTADOR}), sort="fecha_lectura desc", limit=50)
+if not all_rows:
+    print(f"No data for captador {CAPTADOR} (datastore may be mid-reload); skipping")
+    sys.exit(0)
 latest_date = all_rows[0]["fecha_lectura"]
 
 if is_dupe("Las Rozas", {"fecha": latest_date}):
